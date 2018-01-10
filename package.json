@@ -1,35 +1,27 @@
 {
-  "name": "xrpc",
+  "name": "express-xmlrpc",
   "version": "0.0.1",
-  "main": "./xmlrpc.js",
+  "main": "./index.js",
   "dependencies": {
     "node-xml": ">= 1.0.0",
     "xmlbuilder": ">= 2.1.0"
   },
-  "description": "Express middleware and router support for XML-RPC",
+  "description": "express middleware and router support for xml-rpc",
   "directories": {
     "example": "example",
     "test": "test"
   },
   "devDependencies": {
-	"express": "3.x.x",
-	"xmlrpc": "*"
+  	"express": "4.x.x",
+  	"xmlrpc": "*"
   },
   "scripts": {
     "test": "node ./test/test"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/fshost/xrpc.git"
+    "url": "https://github.com/philetus/express-xmlrpc.git"
   },
-  "keywords": [
-    "node.js",
-    "express",
-    "xml",
-    "xmlrpc",
-    "rpc",
-	"metaweblog"
-  ],
   "author": "Nathan Cartwright",
   "license": "MIT"
 }
