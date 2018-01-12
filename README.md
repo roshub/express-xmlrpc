@@ -9,28 +9,20 @@
     const express = require('express')
     const app = express()
 
-    const port = process.env.PORT || 18776;
-    const data = { data: 9001 }
+    const port = process.env.PORT || 9999
 
-    app.use(xmlrpc.bodyParser) 
+    app.use(xmlrpc.bodyParser)
 
     app.post('/', xmlrpc.apiHandler({
       echo: function (request, response, next) {
-        try {
-          response.send(
-            xmlrpc.serializeResponse(request.xmlrpc.params[0]))
-        } catch (error) {
-          response.send(
-            xmlrpc.serializeFault(-32500, 'test error: ' + error.toString()))
-        }
-      }},
-      data // optional context object is passed to api method calls
+        response.send(xmlrpc.serializeResponse(request.xmlrpc.params[0]))
+      }}
     ))
 
     app.listen(port)
 
     const client = xmlrpc.createClient({ port: port })
-    client.methodCall('echo', [data], (error, value) => {
+    client.methodCall('echo', [{ data: 9001 }], (error, value) => {
       console.log(`error: '${error}'`)
       console.log(`value: '${JSON.stringify(value)}'`)
     })
