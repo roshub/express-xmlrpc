@@ -7,11 +7,11 @@
 
 */
 
-const XmlrpcParser = require('./lib/xmlrpc-parser')
+const Parser = require('./lib/xmlrpc-parser')
 
 // for generating responses
-exports.XmlrpcResponse = require('./lib/xmlrpc-response')
-exports.XmlrpcFault = require('./lib/xmlrpc-fault')
+exports.Response = require('./lib/xmlrpc-response')
+exports.Fault = require('./lib/xmlrpc-fault')
 
 // middleware to parse body of xmlrpc method call & add to request
 // * method -> request.xmlrpc.method
@@ -24,7 +24,7 @@ exports.requestBodyParser = (request, response, next) => {
   if ('text/xml' != mime) { return next() }
 
   var raw = []
-  var parser = new XmlrpcParser({
+  var parser = new Parser({
     onDone: (data) => {
       request.xmlrpc = data
       next()
@@ -52,13 +52,16 @@ exports.requestBodyParser = (request, response, next) => {
 }
 
 // generate route handler for xmlrpc method requests from api & context
-exports.apiHandler = (api, context={}) => {
+// api is an object with method names mapped to handler functions:
+// { methodName: methodNameHandler[(request, response, next)], .. }
+// context is an optional context object to be mapped to this inside of call
+exports.apiHandler = (api, context) => {
   return (request, response, next) => {
 
     // if xml wasnt successfully parsed respond with fault
     if (!request.xmlrpc) {
       response.send(
-        new XmlRpcFault(-32700, 'parse error: not well formed').xml())
+        new exports.Fault(-32700, 'parse error: not well formed').xml())
     }
 
     if (request.xmlrpc.method in api) {
@@ -70,14 +73,14 @@ exports.apiHandler = (api, context={}) => {
 
       } catch (error) {
         response.send(
-          new XmlRpcFault(
+          new exports.Fault(
             -32500, `error calling method '${request.xmlrpc.method}'`).xml())
         next(error) // give express recovery middleware a shot
       }
 
     } else {
       response.send(
-        new XmlRpcFault(
+        new exports.Fault(
           -32601, 
           `requested method '${request.xmlrpc.method}' not found`).xml()
       next(error) // give express recovery middleware a shot
