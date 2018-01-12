@@ -3,17 +3,15 @@
   "version": "0.0.1",
   "main": "./index.js",
   "dependencies": {
-    "node-xml": ">= 1.0.0",
-    "xmlbuilder": ">= 2.1.0"
+    "sax": "^1.2.4",
+    "xmlbuilder": "^9.0.4"
   },
   "description": "express middleware and router support for xml-rpc",
   "directories": {
-    "example": "example",
     "test": "test"
   },
   "devDependencies": {
-  	"express": "4.x.x",
-  	"xmlrpc": "*"
+    "express": "^4.16.2"
   },
   "scripts": {
     "test": "node ./test/test"
@@ -22,6 +20,6 @@
     "type": "git",
     "url": "https://github.com/philetus/express-xmlrpc.git"
   },
-  "author": "Nathan Cartwright",
+  "author": "michael philetus weller",
   "license": "MIT"
 }

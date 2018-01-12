@@ -1,53 +1,65 @@
-# xrpc
+# express-xmlrpc
 
-  An XML-RPC server middleware for Express running on Node.js
-  built on [node](http://nodejs.org) for [Express](http://expressjs.com/).
+  xml-rpc server middleware for [express](http://expressjs.com/)
+  built on [node](http://nodejs.org)
 
-    var express = require('express'),
-        xrpc = require('xrpc'),
-        app = express();
+    'use strict'
 
-    app.use(xrpc.xmlRpc);
+    const xmlrpc = require('express-xmlrpc')
+    const express = require('express')
+    const app = express()
 
-    app.post('/RPC', xrpc.route({
-        echo: function (msg, callback) {
-            callback(null, msg);
+    const port = process.env.PORT || 18776;
+    const data = { data: 9001 }
+
+    app.use(xmlrpc.bodyParser) 
+
+    app.post('/', xmlrpc.apiHandler({
+      echo: function (request, response, next) {
+        try {
+          response.send(
+            xmlrpc.serializeResponse(request.xmlrpc.params[0]))
+        } catch (error) {
+          response.send(
+            xmlrpc.serializeFault(-32500, 'test error: ' + error.toString()))
         }
-    }));
+      }},
+      data // optional context object is passed to api method calls
+    ))
 
-    app.listen(3000);
+    app.listen(port)
+
+    const client = xmlrpc.createClient({ port: port })
+    client.methodCall('echo', [data], (error, value) => {
+      console.log(`error: '${error}'`)
+      console.log(`value: '${JSON.stringify(value)}'`)
+    })
 
 
-## Installation
+## installation
 
-    $ npm install xrpc
+    $ yarn add philetus/express-xmlrpc
 
 
-## Features
+## features
 
   * express middleware
   * platform-independent xml parser
   * includes a router to make using this module dead-simple
 
-## Examples
+## running tests
 
-See app.js in the example subdirectory for an example implementing one of the metaWeblog API methods
+make sure the dev dependencies are installed
 
-## Running Tests
+    $ yarn install
 
-To run the test, ensure the dev dependencies are installed
+run the test
 
-    $ npm install
+    $ yarn test
 
-then run the test:
-
-    $ npm test
-
-## License
+## license
 
 (The MIT License)
-
-Copyright (c) 2012 Nathan Cartwright&lt;fshost@yahoo.com&gt;
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the

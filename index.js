@@ -1,53 +1,34 @@
-/*
-  express-xmlrpc - xml-rpc middleware for express
+'use strict'
 
-  based on rsscloud-node's xmlrpc module: 
-  * https://github.com/lmorchard/rsscloud-node
-  specs: http://www.xmlrpc.com/spec
+// express-xmlrpc - xml-rpc middleware for express
+// xml-rpc spec: http://www.xmlrpc.com/spec
 
-*/
-
-const Parser = require('./lib/xmlrpc-parser')
-
+const Deserializer = require('./lib/deserializer.js')
+const Serializer = require('./lib/serializer.js')
+const Client = require('./lib/client.js')
 // for generating responses
-exports.Response = require('./lib/xmlrpc-response')
-exports.Fault = require('./lib/xmlrpc-fault')
+exports.serializeResponse = Serializer.serializeMethodResponse // (params)
+exports.serializeFault = Serializer.serializeFault // (code, msg)
+exports.createClient = (options) => new Client(options, false)
 
 // middleware to parse body of xmlrpc method call & add to request
 // * method -> request.xmlrpc.method
 // * parameters -> request.xmlrpc.params
-exports.requestBodyParser = (request, response, next) => {
+exports.bodyParser = (request, response, next) => {
 
-  // only attempt to parse text/xml Content-Type
-  var ct = request.headers['content-type'] || ''
-  var mime = ct.split(';')[0]
-  if ('text/xml' != mime) { return next() }
-
-  var raw = []
-  var parser = new Parser({
-    onDone: (data) => {
-      request.xmlrpc = data
-      next()
-    },
-    onError: (msg) => {
+  const deserializer = new Deserializer()
+  deserializer.deserializeMethodCall(request, (error, method, params) => {
+    if (error !== null) {
       request.xmlrpc = null
+      console.error('failed to deserialize method call from body:', error)
+      next()
+    } else {
+      request.xmlrpc = {
+        method: method,
+        params: params,
+      }
       next()
     }
-  });
-
-  // try parsing raw body data instead of hooking up events
-  if (request.rawBody) {
-    return parser.parseString(request.rawBody).finish()
-  }
-
-  request.setEncoding('utf8')
-  request.on('data', (chunk) => {
-    raw.push(chunk)
-    parser.parseString(chunk)
-  })
-  request.on('end', () => {
-    request.rawBody = raw.join('')
-    parser.finish()
   })
 }
 
@@ -61,7 +42,7 @@ exports.apiHandler = (api, context) => {
     // if xml wasnt successfully parsed respond with fault
     if (!request.xmlrpc) {
       response.send(
-        new exports.Fault(-32700, 'parse error: not well formed').xml())
+        exports.serializeFault(-32700, 'parse error: not well formed'))
     }
 
     if (request.xmlrpc.method in api) {
@@ -73,17 +54,15 @@ exports.apiHandler = (api, context) => {
 
       } catch (error) {
         response.send(
-          new exports.Fault(
-            -32500, `error calling method '${request.xmlrpc.method}'`).xml())
+          exports.serializeFault(
+            -32500, `error calling method '${request.xmlrpc.method}'`))
         next(error) // give express recovery middleware a shot
       }
 
     } else {
       response.send(
-        new exports.Fault(
-          -32601, 
-          `requested method '${request.xmlrpc.method}' not found`).xml()
-      next(error) // give express recovery middleware a shot
+        exports.serializeFault(
+          -32601,`requested method '${request.xmlrpc.method}' not found`))
     }
   }
 }
