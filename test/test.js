@@ -4,7 +4,7 @@ const assert = require('assert')
 
 const os = require('os')
 const host = os.hostname()
-const port = process.env.PORT || 18776;
+const port = process.env.PORT || 18776
 const express = require('express')
 
 // to install -> $ yarn add philetus/express-xmlrpc
@@ -17,30 +17,31 @@ const app = express()
 
 // xmlrpc message parsing middleware
 // parses request body & sets request.xmlrpc.method & request.xmlrpc.params
-app.use(xmlrpc.bodyParser) 
+app.use(xmlrpc.bodyParser)
 
 // create xmlrpc api handler for express route
 // gets method & parameters from request.xmlrpc values set by middleware
 // calls express-xmlrpc.Response() to generate response from return values
-app.post('/', xmlrpc.apiHandler({
-  echo: function (request, response, next) {
-    console.log(`method: '${request.xmlrpc.method}'`)
-    console.log(`params: '${JSON.stringify(request.xmlrpc.params)}'`)
-    console.log(`context: '${JSON.stringify(this)}'`)
-    try {
-      assert.equal(this.test, 999)
-      const responseXml = xmlrpc.serializeResponse(request.xmlrpc.params[0])
-      console.log('response:', responseXml)
-      response.send(responseXml)
-    } catch (error) {
-      const faultXml = xmlrpc.serializeFault(
-        -32500, 'test error: ' + error.toString())
-      console.log('fault:', faultXml)
-      response.send(faultXml)
-    }
-  }},
-  data // context object to pass to api method calls
-))
+app.post('/',
+  xmlrpc.apiHandler({
+    echo: function (req, res, next) {
+      console.log(`method: '${req.body.method}'`)
+      console.log(`params: '${JSON.stringify(req.body.params)}'`)
+      console.log(`context: '${JSON.stringify(this)}'`)
+      try {
+        assert.equal(this.test, 999)
+        const responseXml = xmlrpc.serializeResponse(req.body.params[0])
+        console.log('response:', responseXml)
+        res.send(responseXml)
+      } catch (error) {
+        const faultXml = xmlrpc.serializeFault(
+          -32500, 'test error: ' + error.toString())
+        console.log('fault:', faultXml)
+        res.send(faultXml)
+      }
+    }},
+  data) // context object to pass to api method calls
+)
 
 // listen for xmlrpc method calls at ros master uri
 const server = app.listen(port)
@@ -60,5 +61,3 @@ client.methodCall('echo', [data], (error, value) => {
   }
   server.close()
 })
-
-
