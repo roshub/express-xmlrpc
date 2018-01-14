@@ -39,7 +39,7 @@ exports.bodyParser = (req, res, next) => {
 // { methodName: methodNameHandler[(request, response, next)], .. }
 // context is an optional context object to be mapped to this inside of call
 exports.apiHandler = (api, context, onError, onMiss) => {
-  return (req, res, next) => {
+  return async (req, res, next) => {
 
     // if xml wasnt successfully parsed respond with fault
     if (!req.body) {
@@ -48,11 +48,14 @@ exports.apiHandler = (api, context, onError, onMiss) => {
     }
 
     if (req.body.method in api) {
-      console.log(`calling method '${req.body.method}'`)
+      console.log(`calling method '${req.body.method}`
+        + `(${JSON.stringify(req.body.params)})'`)
 
       try {
         const method = api[req.body.method]
-        method.call(context, req, res, next)
+
+        // rejected promises wont be caught unless they are awaited
+        await method.call(context, req, res, next)
 
       } catch (error) {
 
@@ -60,8 +63,10 @@ exports.apiHandler = (api, context, onError, onMiss) => {
         if (onError) {
           onError.call(context, error, req, res, next)
 
-        // otherwise send generic xmlrpc fault
+        // otherwise log & send generic xmlrpc fault
         } else {
+          console.error(`error calling method '${req.body.method}:`, error)
+
           res.send(
             exports.serializeFault(
               -32500, `error calling method '${req.body.method}'`))
