@@ -14,8 +14,8 @@
     app.use(xmlrpc.bodyParser)
 
     app.post('/', xmlrpc.apiHandler({
-      echo: function (request, response, next) {
-        response.send(xmlrpc.serializeResponse(request.xmlrpc.params[0]))
+      echo: function (req, res) {
+        res.send(xmlrpc.serializeResponse(req.body.params[0]))
       }}
     ))
 
@@ -31,13 +31,6 @@
 ## installation
 
     $ yarn add philetus/express-xmlrpc
-
-
-## features
-
-  * express middleware
-  * platform-independent xml parser
-  * includes a router to make using this module dead-simple
 
 ## running tests
 

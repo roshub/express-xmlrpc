@@ -20,8 +20,13 @@ const app = express()
 app.use(xmlrpc.bodyParser)
 
 // create xmlrpc api handler for express route
-// gets method & parameters from request.xmlrpc values set by middleware
-// calls express-xmlrpc.Response() to generate response from return values
+// gets method & parameters from request.body values set by middleware
+//
+// echo handler calls xmlrpc.serializeResponse() with return values
+// to generate xml to pass to express res.send()
+//
+// to support more method signatures add more handler functions to api object
+// passed to xmlrpc.apiHandler
 app.post('/',
   xmlrpc.apiHandler({
     echo: function (req, res, next) {
