@@ -20,10 +20,11 @@ const app = express()
 app.use(xmlrpc.bodyParser)
 
 // create xmlrpc api handler for express route
-// gets method & parameters from request.body values set by middleware
+// gets method & parameters from req.body values set by middleware
 //
-// echo handler calls xmlrpc.serializeResponse() with return values
-// to generate xml to pass to express res.send()
+// echo handler calls xmlrpc.sendResult(result, req, res)
+// to generate xml to pass to express res.send(), and to bundle several
+// responses together for system.multicall
 //
 // to support more method signatures add more handler functions to api object
 // passed to xmlrpc.apiHandler
@@ -35,7 +36,7 @@ app.post('/',
       console.log(`context: '${JSON.stringify(this)}'`)
       try {
         assert.equal(this.test, 999)
-        const responseXml = xmlrpc.serializeResponse(req.body.params[0])
+        const responseXml = xmlrpc.sendResult(req.body.params[0], req, res)
         console.log('response:', responseXml)
         res.send(responseXml)
       } catch (error) {

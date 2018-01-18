@@ -15,7 +15,7 @@
 
     app.post('/', xmlrpc.apiHandler({
       echo: function (req, res) {
-        res.send(xmlrpc.serializeResponse(req.body.params[0]))
+        xmlrpc.sendResult(req.body.params[0], req, res)
       }}
     ))
 
