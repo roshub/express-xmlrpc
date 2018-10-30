@@ -1,0 +1,13 @@
+{
+    "presets": [
+      ["@babel/preset-env", {
+        "targets": {
+          "node": "0.10.0"
+        },
+        "modules": false
+      }]
+    ],
+    "plugins": [
+      "@babel/syntax-dynamic-import"
+    ]
+}

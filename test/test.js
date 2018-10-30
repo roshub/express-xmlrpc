@@ -7,8 +7,8 @@ const host = os.hostname()
 const port = process.env.PORT || 18776
 const express = require('express')
 
-// to install -> $ yarn add philetus/express-xmlrpc
-const xmlrpc = require('..') // require('express-xmlrpc')
+// to install -> $ yarn add express-xmlrpc
+const xmlrpc = require('../dist') // require('express-xmlrpc')
 
 const data = { test: 999 }
 

@@ -30,7 +30,7 @@
 
 ## installation
 
-    $ yarn add philetus/express-xmlrpc
+    $ yarn add express-xmlrpc
 
 ## running tests
 
