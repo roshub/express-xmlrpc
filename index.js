@@ -6,6 +6,7 @@
 const Deserializer = require('./lib/deserializer.js')
 const Serializer = require('./lib/serializer.js')
 const Client = require('./lib/client.js')
+const debug = require('debug')('express-xmlrpc:index')
 
 // for serializing xmlrpc responses inside api methods
 exports.serializeResponse = Serializer.serializeMethodResponse // (params)
@@ -64,13 +65,14 @@ exports.apiHandler = (api, context, onError, onMiss) => {
         for (let i = 0; i < calls.length; i++) {
           req.body.method = calls[i]['methodName']
           req.body.params = calls[i]['params']
-
-          console.log(`calling multicall method: '${req.body.method}`
+          debug(`calling multicall method: '${req.body.method}`
             + `(${JSON.stringify(req.body.params)})'`)
-
           const method = api[req.body.method]
-          results.push(await method.call(context, req))
+          var callResult = await method.call(context, req)
+          results.push([callResult])
+        
         }
+        
         res.send(exports.serializeResponse(results))
 
       } catch (error) {
@@ -91,7 +93,7 @@ exports.apiHandler = (api, context, onError, onMiss) => {
         }
       }
     } else if (req.body.method in api) {
-      console.log(`calling method '${req.body.method}`
+      debug(`calling method '${req.body.method}`
         + `(${JSON.stringify(req.body.params)})'`)
 
       try {
