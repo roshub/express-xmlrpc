@@ -1,5 +1,4 @@
 'use strict'
-require('@babel/polyfill')
 // express-xmlrpc - xml-rpc middleware for express
 // xml-rpc spec: http://www.xmlrpc.com/spec
 

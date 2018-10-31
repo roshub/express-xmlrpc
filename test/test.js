@@ -1,19 +1,19 @@
 'use strict'
 
-const assert = require('assert')
+var assert = require('assert')
 
-const os = require('os')
-const host = os.hostname()
-const port = process.env.PORT || 18776
-const express = require('express')
+var os = require('os')
+var host = os.hostname()
+var port = process.env.PORT || 18776
+var express = require('express')
 
 // to install -> $ yarn add express-xmlrpc
-const xmlrpc = require('../dist') // require('express-xmlrpc')
+var xmlrpc = require('../dist') // require('express-xmlrpc')
 
-const data = { test: 999 }
+var data = { test: 999 }
 
 // use express to listen for incoming xmlrpc method requests
-const app = express()
+var app = express()
 
 // xmlrpc message parsing middleware
 // parses request body & sets request.xmlrpc.method & request.xmlrpc.params
@@ -31,16 +31,16 @@ app.use(xmlrpc.bodyParser)
 app.post('/',
   xmlrpc.apiHandler({
     echo: function (req, res, next) {
-      console.log(`method: '${req.body.method}'`)
-      console.log(`params: '${JSON.stringify(req.body.params)}'`)
-      console.log(`context: '${JSON.stringify(this)}'`)
+      console.log("method:", req.body.method)
+      console.log('params:', JSON.stringify(req.body.params))
+      console.log('context', JSON.stringify(this))
       try {
         assert.equal(this.test, 999)
-        const responseXml = xmlrpc.sendResult(req.body.params[0], req, res)
+        var responseXml = xmlrpc.sendResult(req.body.params[0], req, res)
         console.log('response:', responseXml)
         res.send(responseXml)
       } catch (error) {
-        const faultXml = xmlrpc.serializeFault(
+        var faultXml = xmlrpc.serializeFault(
           -32500, 'test error: ' + error.toString())
         console.log('fault:', faultXml)
         res.send(faultXml)
@@ -50,16 +50,16 @@ app.post('/',
 )
 
 // listen for xmlrpc method calls at ros master uri
-const server = app.listen(port)
+var server = app.listen(port)
 
 // create client to send method call
-const client = xmlrpc.createClient({ host: host, port: port })
+var client = xmlrpc.createClient({ host: host, port: port })
 
 // sends a method call to the XML-RPC server
-client.methodCall('echo', [data], (error, value) => {
+client.methodCall('echo', [data], function(error, value){
   try {
-    console.log(`error: '${error}'`)
-    console.log(`value: '${JSON.stringify(value)}'`)
+    console.log("error:", error)
+    console.log("value:", JSON.stringify(value))
     assert.equal(value.test, 999)
     console.log('express-xmlrpc test successful')
   } catch (error) {

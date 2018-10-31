@@ -1,10 +1,11 @@
 {
   "name": "express-xmlrpc",
-  "version": "0.0.2",
+  "version": "0.1.0",
   "main": "./dist/index.js",
   "dependencies": {
-    "@babel/polyfill": "^7.0.0",
-    "debug": "^4.1.0",
+    "@babel/runtime": "^7.1.2",
+    "@babel/runtime-corejs2": "^7.1.2",
+    "debug": "2.6.9",
     "sax": "^1.2.4",
     "xmlbuilder": "^9.0.4"
   },
@@ -15,7 +16,7 @@
   "devDependencies": {
     "@babel/cli": "^7.1.2",
     "@babel/core": "^7.1.2",
-    "@babel/plugin-syntax-dynamic-import": "^7.0.0",
+    "@babel/plugin-transform-runtime": "^7.1.0",
     "@babel/preset-env": "^7.1.0",
     "eslint": "^4.15.0",
     "eslint-config-standard": "github:standard/eslint-config-standard",
@@ -25,14 +26,17 @@
     "eslint-plugin-standard": "^3.0.1",
     "express": "^4.16.2"
   },
+  "engines": {
+    "node": ">= 0.10.0"
+  },
   "scripts": {
     "test": "node ./test/test",
-    "prepare": "babel ./src --experimental --source-maps-inline -d ./dist"
+    "prepare": "babel ./src --source-maps-inline -d ./dist"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/philetus/express-xmlrpc.git"
+    "url": "https://github.com/roshub/express-xmlrpc.git"
   },
-  "author": "michael philetus weller <philetus@roshub.io>",
+  "author": "RosHub Inc. <code@roshub.io>",
   "license": "MIT"
 }
