@@ -1,5 +1,5 @@
 var xmlBuilder    = require('xmlbuilder')
-  , dateFormatter = require('./date_formatter')
+var dateFormatter = require('./date_formatter')
 
 /**
  * Creates the XML for an XML-RPC method call.
@@ -12,7 +12,7 @@ var xmlBuilder    = require('xmlbuilder')
  *   - {String} xml           - The method call XML.
  */
 exports.serializeMethodCall = function(method, params, encoding) {
-  var params = params || []
+  params = params || []
 
   var options = { version: '1.0', allowSurrogateChars: true }
 
