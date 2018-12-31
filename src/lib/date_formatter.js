@@ -15,11 +15,11 @@ var DateFormatter = function (opts) {
  * @see DateFormatter#setOpts
  */
 DateFormatter.DEFAULT_OPTIONS = {
-  colons: true
-, hyphens: false
-, local: true
-, ms: false
-, offset: false
+  colons: true,
+  hyphens: false,
+  local: true,
+  ms: false,
+  offset: false,
 }
 
 /**
@@ -66,22 +66,22 @@ DateFormatter.prototype.setOpts = function (opts) {
  * @param {String} time - String representation of timestamp.
  * @return {Date}       - Date object from timestamp.
  */
-DateFormatter.prototype.decodeIso8601 = function(time) {
+DateFormatter.prototype.decodeIso8601 = function (time) {
   var dateParts = time.toString().match(DateFormatter.ISO8601)
   if (!dateParts) {
     throw new Error('Expected a ISO8601 datetime but got \'' + time + '\'')
   }
 
   var date = [
-    [dateParts[1], dateParts[3] || '01', dateParts[5] || '01'].join('-')
-    , 'T'
-    , [
-        dateParts[7] || '00'
-      , dateParts[11] || '00'
-      , dateParts[14] || '00'
-      ].join(':')
-    , '.'
-    , dateParts[16] || '000'
+    [dateParts[1], dateParts[3] || '01', dateParts[5] || '01'].join('-'),
+    'T',
+    [
+      dateParts[7] || '00',
+      dateParts[11] || '00',
+      dateParts[14] || '00',
+    ].join(':'),
+    '.',
+    dateParts[16] || '000',
   ].join('')
 
   date += (dateParts[17] !== undefined) ?
@@ -98,18 +98,18 @@ DateFormatter.prototype.decodeIso8601 = function(time) {
  * @param {Date} date - Date object.
  * @return {String}   - String representation of timestamp.
  */
-DateFormatter.prototype.encodeIso8601 = function(date) {
+DateFormatter.prototype.encodeIso8601 = function (date) {
   var parts = this.opts.local ?
     DateFormatter.getLocalDateParts(date) :
     DateFormatter.getUTCDateParts(date)
 
   return [
-    [parts[0],parts[1],parts[2]].join(this.opts.hyphens ? '-' : '')
-  , 'T'
-  , [parts[3],parts[4],parts[5]].join(this.opts.colons ? ':' : '')
-  , (this.opts.ms) ? '.' + parts[6] : ''
-  , (this.opts.local) ? ((this.opts.offset) ?
-      DateFormatter.formatCurrentOffset(date) : '') : 'Z'
+    [parts[0], parts[1], parts[2]].join(this.opts.hyphens ? '-' : ''),
+    'T',
+    [parts[3], parts[4], parts[5]].join(this.opts.colons ? ':' : ''),
+    (this.opts.ms) ? '.' + parts[6] : '',
+    (this.opts.local) ? ((this.opts.offset) ?
+      DateFormatter.formatCurrentOffset(date) : '') : 'Z',
   ].join('')
 }
 
@@ -122,15 +122,14 @@ DateFormatter.prototype.encodeIso8601 = function(date) {
  */
 DateFormatter.getUTCDateParts = function (date) {
   return [
-    date.getUTCFullYear()
-  , DateFormatter.zeroPad(date.getUTCMonth()+1,2)
-  , DateFormatter.zeroPad(date.getUTCDate(),2)
-  , DateFormatter.zeroPad(date.getUTCHours(), 2)
-  , DateFormatter.zeroPad(date.getUTCMinutes(), 2)
-  , DateFormatter.zeroPad(date.getUTCSeconds(), 2)
-  , DateFormatter.zeroPad(date.getUTCMilliseconds(), 3)]
+    date.getUTCFullYear(),
+    DateFormatter.zeroPad(date.getUTCMonth() + 1, 2),
+    DateFormatter.zeroPad(date.getUTCDate(), 2),
+    DateFormatter.zeroPad(date.getUTCHours(), 2),
+    DateFormatter.zeroPad(date.getUTCMinutes(), 2),
+    DateFormatter.zeroPad(date.getUTCSeconds(), 2),
+    DateFormatter.zeroPad(date.getUTCMilliseconds(), 3)]
 }
-
 
 /**
  * Helper function to get an array of zero-padded date parts,
@@ -141,13 +140,13 @@ DateFormatter.getUTCDateParts = function (date) {
  */
 DateFormatter.getLocalDateParts = function (date) {
   return [
-    date.getFullYear()
-  , DateFormatter.zeroPad(date.getMonth()+1,2)
-  , DateFormatter.zeroPad(date.getDate(),2)
-  , DateFormatter.zeroPad(date.getHours(), 2)
-  , DateFormatter.zeroPad(date.getMinutes(), 2)
-  , DateFormatter.zeroPad(date.getSeconds(), 2)
-  , DateFormatter.zeroPad(date.getMilliseconds(), 3)]
+    date.getFullYear(),
+    DateFormatter.zeroPad(date.getMonth() + 1, 2),
+    DateFormatter.zeroPad(date.getDate(), 2),
+    DateFormatter.zeroPad(date.getHours(), 2),
+    DateFormatter.zeroPad(date.getMinutes(), 2),
+    DateFormatter.zeroPad(date.getSeconds(), 2),
+    DateFormatter.zeroPad(date.getMilliseconds(), 3)]
 }
 
 /**
@@ -177,10 +176,10 @@ DateFormatter.zeroPad = function (digit, length) {
 DateFormatter.formatCurrentOffset = function (d) {
   var offset = (d || new Date()).getTimezoneOffset()
   return (offset === 0) ? 'Z' : [
-      (offset < 0) ? '+' : '-'
-    , DateFormatter.zeroPad(Math.abs(Math.floor(offset/60)),2)
-    , ':'
-    , DateFormatter.zeroPad(Math.abs(offset%60),2)
+    (offset < 0) ? '+' : '-',
+    DateFormatter.zeroPad(Math.abs(Math.floor(offset / 60)), 2),
+    ':',
+    DateFormatter.zeroPad(Math.abs(offset % 60), 2),
   ].join('')
 }
 

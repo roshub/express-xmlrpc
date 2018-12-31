@@ -69,9 +69,7 @@ exports.apiHandler = (api, context, onError, onMiss) => {
           const method = api[req.body.method]
           var callResult = await method.call(context, req)
           results.push([callResult])
-        
         }
-        
         res.send(exports.serializeResponse(results))
 
       } catch (error) {

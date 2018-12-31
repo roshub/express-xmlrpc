@@ -31,7 +31,7 @@ app.use(xmlrpc.bodyParser)
 app.post('/',
   xmlrpc.apiHandler({
     echo: function (req, res, next) {
-      console.log("method:", req.body.method)
+      console.log('method:', req.body.method)
       console.log('params:', JSON.stringify(req.body.params))
       console.log('context', JSON.stringify(this))
       try {
@@ -45,7 +45,7 @@ app.post('/',
         console.log('fault:', faultXml)
         res.send(faultXml)
       }
-    }},
+    } },
   data) // context object to pass to api method calls
 )
 
@@ -56,10 +56,10 @@ var server = app.listen(port)
 var client = xmlrpc.createClient({ host: host, port: port })
 
 // sends a method call to the XML-RPC server
-client.methodCall('echo', [data], function(error, value){
+client.methodCall('echo', [data], function (error, value) {
   try {
-    console.log("error:", error)
-    console.log("value:", JSON.stringify(value))
+    console.log('error:', error)
+    console.log('value:', JSON.stringify(value))
     assert.equal(value.test, 999)
     console.log('express-xmlrpc test successful')
   } catch (error) {

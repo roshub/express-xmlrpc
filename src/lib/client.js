@@ -1,8 +1,8 @@
-var http         = require('http')
-  , https        = require('https')
-  , url          = require('url')
-  , Serializer   = require('./serializer')
-  , Deserializer = require('./deserializer')
+var http = require('http')
+var https = require('https')
+var url = require('url')
+var Serializer = require('./serializer')
+var Deserializer = require('./deserializer')
 
 /**
  * Creates a Client object for making XML-RPC method calls.
@@ -19,10 +19,10 @@ var http         = require('http')
  *                                  otherwise false.
  * @return {Client}
  */
-function Client(options, isSecure) {
+function Client (options, isSecure) {
 
   // Invokes with new if called without
-  if (false === (this instanceof Client)) {
+  if ((this instanceof Client) === false) {
     return new Client(options, isSecure)
   }
 
@@ -34,27 +34,26 @@ function Client(options, isSecure) {
   }
 
   if (typeof options.url !== 'undefined') {
-    var parsedUrl = url.parse(options.url);
-    options.host = parsedUrl.hostname;
-    options.path = parsedUrl.pathname;
-    options.port = parsedUrl.port;
+    var parsedUrl = url.parse(options.url)
+    options.host = parsedUrl.hostname
+    options.path = parsedUrl.pathname
+    options.port = parsedUrl.port
   }
 
   // Set the HTTP request headers
   var headers = {
-    'User-Agent'     : 'NodeJS XML-RPC Client'
-  , 'Content-Type'   : 'text/xml'
-  , 'Accept'         : 'text/xml'
-  , 'Accept-Charset' : 'utf8'
-  , 'Connection'     : 'Keep-Alive'
+    'User-Agent': 'NodeJS XML-RPC Client',
+    'Content-Type': 'text/xml',
+    'Accept': 'text/xml',
+    'Accept-Charset': 'utf8',
+    'Connection': 'Keep-Alive',
   }
   options.headers = options.headers || {}
 
   if (options.headers.Authorization == null &&
       options.basic_auth != null &&
       options.basic_auth.user != null &&
-      options.basic_auth.pass != null)
-  {
+      options.basic_auth.pass != null) {
     var auth = options.basic_auth.user + ':' + options.basic_auth.pass
     options.headers['Authorization'] = 'Basic ' + new Buffer(auth).toString('base64')
   }
@@ -71,13 +70,13 @@ function Client(options, isSecure) {
   this.isSecure = isSecure
   this.headersProcessors = {
     processors: [],
-    composeRequest: function(headers) {
-      this.processors.forEach(function(p) {p.composeRequest(headers);})
+    composeRequest: function (headers) {
+      this.processors.forEach(function (p) { p.composeRequest(headers) })
     },
-    parseResponse: function(headers) {
-      this.processors.forEach(function(p) {p.parseResponse(headers);})
-    }
-  };
+    parseResponse: function (headers) {
+      this.processors.forEach(function (p) { p.parseResponse(headers) })
+    },
+  }
 }
 
 /**
@@ -89,14 +88,14 @@ function Client(options, isSecure) {
  *   - {Object|null} error    - Any errors when making the call, otherwise null.
  *   - {mixed} value          - The value returned in the method response.
  */
-Client.prototype.methodCall = function methodCall(method, params, callback) {
-  var options   = this.options
-  var xml       = Serializer.serializeMethodCall(method, params, options.encoding)
+Client.prototype.methodCall = function methodCall (method, params, callback) {
+  var options = this.options
+  var xml = Serializer.serializeMethodCall(method, params, options.encoding)
   var transport = this.isSecure ? https : http
 
   options.headers['Content-Length'] = Buffer.byteLength(xml, 'utf8')
   this.headersProcessors.composeRequest(options.headers)
-  var request = transport.request(options, function(response) {
+  var request = transport.request(options, function (response) {
 
     var body = []
     response.on('data', function (chunk) { body.push(chunk) })
@@ -108,19 +107,18 @@ Client.prototype.methodCall = function methodCall(method, params, callback) {
       return err
     }
 
-    if (response.statusCode == 404) {
+    if (response.statusCode === 404) {
       callback(__enrichError(new Error('Not Found')))
-    }
-    else {
+    } else {
       this.headersProcessors.parseResponse(response.headers)
 
       var deserializer = new Deserializer(options.responseEncoding)
 
-      deserializer.deserializeMethodResponse(response, function(err, result) {
+      deserializer.deserializeMethodResponse(response, function (err, result) {
         if (err) {
-          err = __enrichError(err)
+          var passErr = __enrichError(err)
         }
-        callback(err, result)
+        callback(passErr, result)
       })
     }
   }.bind(this))
@@ -131,4 +129,3 @@ Client.prototype.methodCall = function methodCall(method, params, callback) {
 }
 
 module.exports = Client
-
