@@ -28,11 +28,11 @@
     })
 
 
-## installation
+## Installation
 
     $ yarn add express-xmlrpc
 
-## running tests
+## Running Tests
 
 make sure the dev dependencies are installed
 
@@ -41,3 +41,8 @@ make sure the dev dependencies are installed
 run the test
 
     $ yarn test
+
+## Credits
+
+Originally forked from the [xrpc project](https://www.npmjs.com/package/xrpc).
+Uses Serializer and Deserializer logic from the [rosnodejs](https://github.com/RethinkRobotics-opensource/rosnodejs) package.
